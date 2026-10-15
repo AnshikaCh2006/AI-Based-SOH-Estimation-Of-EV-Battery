@@ -1,19 +1,19 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { 
-  Activity, AlertTriangle, BatteryCharging, BarChart3, Bell, BrainCircuit, 
-  CalendarDays, CarFront, CheckCircle2, ChevronDown, Cpu, Database, 
-  Gauge, HeartPulse, Home, Layers, Radio, RefreshCw, Settings2, 
-  ShieldCheck, Signal, Thermometer, UserCircle, Zap, Box, 
+import {
+  Activity, AlertTriangle, BatteryCharging, BarChart3, Bell, BrainCircuit,
+  CalendarDays, CarFront, CheckCircle2, ChevronDown, Cpu, Database,
+  Gauge, HeartPulse, Home, Layers, Radio, RefreshCw, Settings2,
+  ShieldCheck, Signal, Thermometer, UserCircle, Zap, Box,
   Sun, Moon, Sparkles, AlertOctagon, ArrowUpRight, Flame, Layers3, Play
 } from "lucide-react";
-import { 
-  Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, 
+import {
+  Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer,
   Tooltip, XAxis, YAxis, BarChart, Bar, ScatterChart, Scatter, ZAxis
 } from "recharts";
 import Battery3D from "./Battery3D.jsx";
 
-const API = "http://localhost:8000/api";
+const API = `${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api`;
 const fmt = (v, d = 1) => Number.isFinite(Number(v)) ? Number(v).toFixed(d) : "N/A";
 
 // Metric KPI Card
@@ -31,9 +31,9 @@ function MetricCard({ icon: Icon, title, value, unit, color, progress, subtitle,
         <small className="metric-unit">{unit}</small>
       </div>
       <div className="metric-progress-track">
-        <div 
-          className={`metric-progress-fill ${color}`} 
-          style={{ width: `${Math.max(3, Math.min(100, progress || 0))}%` }} 
+        <div
+          className={`metric-progress-fill ${color}`}
+          style={{ width: `${Math.max(3, Math.min(100, progress || 0))}%` }}
         />
       </div>
       <div className="metric-footer">
@@ -69,7 +69,7 @@ export default function App() {
   const [period, setPeriod] = useState("All");
   const [section, setSection] = useState("Overview");
   const [theme, setTheme] = useState("dark"); // "dark" or "light"
-  
+
   // AI Prediction state
   const [predicting, setPredicting] = useState(false);
   const [prediction, setPrediction] = useState(null);
@@ -264,8 +264,8 @@ export default function App() {
                 <BatteryCharging size={16} />
                 <span>BATTERY PACK:</span>
               </label>
-              <select 
-                value={battery} 
+              <select
+                value={battery}
                 onChange={(e) => setBattery(e.target.value)}
                 className="battery-select"
               >
@@ -277,8 +277,8 @@ export default function App() {
             </div>
 
             {/* Theme Toggle */}
-            <button 
-              className="theme-toggle-btn" 
+            <button
+              className="theme-toggle-btn"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               title={`Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`}
             >
@@ -327,72 +327,72 @@ export default function App() {
             <div className="overview-station">
               {/* PRIMARY KPI METRICS GRID */}
               <div className="metrics-deck">
-                <MetricCard 
-                  icon={HeartPulse} 
-                  title="STATE OF HEALTH (SOH)" 
-                  value={fmt(latest.soh_percent, 1)} 
-                  unit="%" 
-                  color={Number(latest.soh_percent) < 80 ? "red" : Number(latest.soh_percent) < 90 ? "amber" : "emerald"} 
+                <MetricCard
+                  icon={HeartPulse}
+                  title="STATE OF HEALTH (SOH)"
+                  value={fmt(latest.soh_percent, 1)}
+                  unit="%"
+                  color={Number(latest.soh_percent) < 80 ? "red" : Number(latest.soh_percent) < 90 ? "amber" : "emerald"}
                   progress={latest.soh_percent}
                   subtitle={Number(latest.soh_percent) >= 80 ? "Optimal Battery Health" : "Degraded - Service Recommended"}
                   trend={`${fmt(latest.actual_capacity_ah, 2)} Ah actual`}
                 />
-                <MetricCard 
-                  icon={BatteryCharging} 
-                  title="STATE OF CHARGE (SOC)" 
-                  value={fmt(latest.soc_end_percent, 1)} 
-                  unit="%" 
-                  color="cyan" 
+                <MetricCard
+                  icon={BatteryCharging}
+                  title="STATE OF CHARGE (SOC)"
+                  value={fmt(latest.soc_end_percent, 1)}
+                  unit="%"
+                  color="cyan"
                   progress={latest.soc_end_percent}
                   subtitle={`Start SoC: ${fmt(latest.soc_start_percent, 0)}%`}
                   trend="Cycle End"
                 />
-                <MetricCard 
-                  icon={Zap} 
-                  title="MEAN PACK VOLTAGE" 
-                  value={fmt(latest.voltage_mean, 2)} 
-                  unit=" V" 
-                  color="amber" 
+                <MetricCard
+                  icon={Zap}
+                  title="MEAN PACK VOLTAGE"
+                  value={fmt(latest.voltage_mean, 2)}
+                  unit=" V"
+                  color="amber"
                   progress={(Number(latest.voltage_mean) / 4.2) * 100}
                   subtitle={`Min: ${fmt(latest.voltage_min, 2)}V · Max: ${fmt(latest.voltage_max, 2)}V`}
                   trend="Nominal Range"
                 />
-                <MetricCard 
-                  icon={Thermometer} 
-                  title="OPERATING TEMP" 
-                  value={fmt(latest.temperature_mean, 1)} 
-                  unit=" °C" 
-                  color={Number(latest.temperature_mean) > 38 ? "red" : Number(latest.temperature_mean) > 34 ? "amber" : "cyan"} 
+                <MetricCard
+                  icon={Thermometer}
+                  title="OPERATING TEMP"
+                  value={fmt(latest.temperature_mean, 1)}
+                  unit=" °C"
+                  color={Number(latest.temperature_mean) > 38 ? "red" : Number(latest.temperature_mean) > 34 ? "amber" : "cyan"}
                   progress={(Number(latest.temperature_mean) / 60) * 100}
                   subtitle={`Peak Thermal: ${fmt(latest.temperature_max, 1)} °C`}
                   trend={Number(latest.temperature_mean) > 38 ? "Thermal Advisory" : "Liquid Cooling Active"}
                 />
-                <MetricCard 
-                  icon={Activity} 
-                  title="DISCHARGE CURRENT" 
-                  value={fmt(latest.current_mean, 2)} 
-                  unit=" A" 
-                  color="purple" 
+                <MetricCard
+                  icon={Activity}
+                  title="DISCHARGE CURRENT"
+                  value={fmt(latest.current_mean, 2)}
+                  unit=" A"
+                  color="purple"
                   progress={Math.abs(Number(latest.current_mean)) * 25}
                   subtitle={`Duration: ${fmt(latest.discharge_time_min, 0)} min`}
                   trend="Load Rate"
                 />
-                <MetricCard 
-                  icon={RefreshCw} 
-                  title="LIFECYCLE COUNT" 
-                  value={fmt(latest.cycle, 0)} 
-                  unit="" 
-                  color="blue" 
+                <MetricCard
+                  icon={RefreshCw}
+                  title="LIFECYCLE COUNT"
+                  value={fmt(latest.cycle, 0)}
+                  unit=""
+                  color="blue"
                   progress={(Number(latest.cycle) / 350) * 100}
                   subtitle="Recorded Test Cycles"
                   trend={`${latest.chemistry || "NMC"} Cell`}
                 />
-                <MetricCard 
-                  icon={ShieldCheck} 
-                  title="INTERNAL RESISTANCE" 
-                  value={fmt(latest.internal_resistance_mohm, 1)} 
-                  unit=" mΩ" 
-                  color={Number(latest.internal_resistance_mohm) > 48 ? "red" : "emerald"} 
+                <MetricCard
+                  icon={ShieldCheck}
+                  title="INTERNAL RESISTANCE"
+                  value={fmt(latest.internal_resistance_mohm, 1)}
+                  unit=" mΩ"
+                  color={Number(latest.internal_resistance_mohm) > 48 ? "red" : "emerald"}
                   progress={(Number(latest.internal_resistance_mohm) / 70) * 100}
                   subtitle="Impedance Growth Index"
                   trend="Cell Balance OK"
@@ -401,9 +401,9 @@ export default function App() {
 
               {/* HERO INTERACTIVE 3D TWIN + STATUS TRIAGE */}
               <div className="hero-split-grid">
-                <Panel 
-                  title="Interactive 3D Battery Pack Digital Twin" 
-                  icon={Layers3} 
+                <Panel
+                  title="Interactive 3D Battery Pack Digital Twin"
+                  icon={Layers3}
                   action={
                     <button className="view-switch-btn" onClick={() => setSection("3D Battery Explorer")}>
                       Full Station View <ArrowUpRight size={13} />
@@ -428,10 +428,10 @@ export default function App() {
                             <span className="anomaly-count-pill">{anomalyRows.length} events logged</span>
                           </div>
                           <p>
-                            Latest anomaly identified at <b>Cycle #{latest.cycle}</b> with 
+                            Latest anomaly identified at <b>Cycle #{latest.cycle}</b> with
                             <b> {latest.anomaly_type || "thermal variance"}</b> ({latest.anomaly_severity || "medium"} severity).
                           </p>
-                          <button 
+                          <button
                             className="triage-action-btn"
                             onClick={() => setSection("Fault Detection Center")}
                           >
@@ -485,20 +485,20 @@ export default function App() {
                         <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -22, bottom: 0 }}>
                           <defs>
                             <linearGradient id="sohGrad" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#10b981" stopOpacity={0.35}/>
-                              <stop offset="95%" stopColor="#10b981" stopOpacity={0.0}/>
+                              <stop offset="5%" stopColor="#10b981" stopOpacity={0.35} />
+                              <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
                             </linearGradient>
                           </defs>
                           <CartesianGrid strokeDasharray="3 3" stroke={theme === "dark" ? "#1e293b" : "#e2e8f0"} />
                           <XAxis dataKey="cycle" tick={{ fontSize: 9, fill: "#64748b" }} tickLine={false} axisLine={false} />
                           <YAxis domain={["auto", "auto"]} tick={{ fontSize: 9, fill: "#64748b" }} tickLine={false} axisLine={false} />
-                          <Tooltip 
-                            contentStyle={{ 
-                              background: theme === "dark" ? "#0f172a" : "#ffffff", 
-                              border: "1px solid #334155", 
-                              borderRadius: "8px", 
-                              fontSize: "11px" 
-                            }} 
+                          <Tooltip
+                            contentStyle={{
+                              background: theme === "dark" ? "#0f172a" : "#ffffff",
+                              border: "1px solid #334155",
+                              borderRadius: "8px",
+                              fontSize: "11px"
+                            }}
                             formatter={(v) => [`${fmt(v, 2)}%`, "State of Health"]}
                           />
                           <Area type="monotone" dataKey="soh_percent" stroke="#10b981" strokeWidth={2.5} fill="url(#sohGrad)" dot={false} />
@@ -510,14 +510,14 @@ export default function App() {
               </div>
 
               {/* MULTI-PARAMETER SENSOR TRENDS */}
-              <Panel 
-                title="Telemetry Parameter Studio" 
+              <Panel
+                title="Telemetry Parameter Studio"
                 icon={BarChart3}
                 action={
                   <div className="period-tabs">
                     {["All", "Latest 30", "Latest 10"].map(p => (
-                      <button 
-                        key={p} 
+                      <button
+                        key={p}
                         className={`period-btn ${period === p ? "active" : ""}`}
                         onClick={() => setPeriod(p)}
                       >
@@ -544,13 +544,13 @@ export default function App() {
                           <CartesianGrid strokeDasharray="3 3" stroke={theme === "dark" ? "#1e293b" : "#f1f5f9"} />
                           <XAxis dataKey="cycle" tick={{ fontSize: 9, fill: "#64748b" }} tickLine={false} axisLine={false} minTickGap={20} />
                           <YAxis domain={["auto", "auto"]} tick={{ fontSize: 9, fill: "#64748b" }} tickLine={false} axisLine={false} />
-                          <Tooltip 
-                            contentStyle={{ 
-                              background: theme === "dark" ? "#0f172a" : "#ffffff", 
-                              border: "1px solid #334155", 
-                              borderRadius: "8px", 
-                              fontSize: "11px" 
-                            }} 
+                          <Tooltip
+                            contentStyle={{
+                              background: theme === "dark" ? "#0f172a" : "#ffffff",
+                              border: "1px solid #334155",
+                              borderRadius: "8px",
+                              fontSize: "11px"
+                            }}
                             formatter={(v) => [`${fmt(v, 2)} ${ch.unit}`, ch.label]}
                           />
                           <Line type="monotone" dataKey={ch.key} stroke={ch.color} strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
@@ -568,8 +568,8 @@ export default function App() {
           {/* ========================================================= */}
           {section === "3D Battery Explorer" && (
             <div className="explorer-station">
-              <Panel 
-                title="Full-Scale 3D Battery Pack &amp; Cell Architecture Explorer" 
+              <Panel
+                title="Full-Scale 3D Battery Pack &amp; Cell Architecture Explorer"
                 icon={Box}
                 action={
                   <div className="explorer-meta-strip">
@@ -596,8 +596,8 @@ export default function App() {
                 </div>
                 <div className="period-tabs">
                   {["All", "Latest 30", "Latest 10"].map(p => (
-                    <button 
-                      key={p} 
+                    <button
+                      key={p}
                       className={`period-btn ${period === p ? "active" : ""}`}
                       onClick={() => setPeriod(p)}
                     >
@@ -614,8 +614,8 @@ export default function App() {
                     <AreaChart data={chartData} margin={{ top: 10, right: 15, left: -10, bottom: 5 }}>
                       <defs>
                         <linearGradient id="sohMain" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
-                          <stop offset="95%" stopColor="#10b981" stopOpacity={0.0}/>
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke={theme === "dark" ? "#1e293b" : "#e2e8f0"} />
@@ -707,11 +707,11 @@ export default function App() {
                       {Object.entries(form).map(([key, value]) => (
                         <div key={key} className="form-group">
                           <label>{key.replaceAll("_", " ")}</label>
-                          <input 
-                            type="number" 
-                            step="any" 
-                            required 
-                            value={value} 
+                          <input
+                            type="number"
+                            step="any"
+                            required
+                            value={value}
                             onChange={(e) => setForm({ ...form, [key]: e.target.value })}
                           />
                         </div>
@@ -761,9 +761,9 @@ export default function App() {
                             <div className="prob-meter">
                               <span>Anomaly Probability: <b>{fmt(prediction.anomaly_probability, 1)}%</b></span>
                               <div className="prob-track">
-                                <div 
-                                  className="prob-fill" 
-                                  style={{ width: `${Math.min(100, prediction.anomaly_probability)}%` }} 
+                                <div
+                                  className="prob-fill"
+                                  style={{ width: `${Math.min(100, prediction.anomaly_probability)}%` }}
                                 />
                               </div>
                             </div>
@@ -894,8 +894,8 @@ export default function App() {
                       <span>Ambient Temperature:</span>
                       <strong>{simParams.temp} °C</strong>
                     </div>
-                    <input 
-                      type="range" min="10" max="60" value={simParams.temp} 
+                    <input
+                      type="range" min="10" max="60" value={simParams.temp}
                       onChange={(e) => setSimParams({ ...simParams, temp: parseInt(e.target.value) })}
                     />
                     <small>Thermal degradation accelerates above 38°C</small>
@@ -906,8 +906,8 @@ export default function App() {
                       <span>Discharge Current Rate:</span>
                       <strong>{simParams.current} C</strong>
                     </div>
-                    <input 
-                      type="range" min="0.5" max="5.0" step="0.1" value={simParams.current} 
+                    <input
+                      type="range" min="0.5" max="5.0" step="0.1" value={simParams.current}
                       onChange={(e) => setSimParams({ ...simParams, current: parseFloat(e.target.value) })}
                     />
                     <small>Higher C-rates elevate internal resistive heating</small>
@@ -918,8 +918,8 @@ export default function App() {
                       <span>Discharge Lifecycle Count:</span>
                       <strong>{simParams.cycles} Cycles</strong>
                     </div>
-                    <input 
-                      type="range" min="10" max="400" value={simParams.cycles} 
+                    <input
+                      type="range" min="10" max="400" value={simParams.cycles}
                       onChange={(e) => setSimParams({ ...simParams, cycles: parseInt(e.target.value) })}
                     />
                     <small>SEI layer growth and active lithium loss</small>
@@ -930,8 +930,8 @@ export default function App() {
                       <span>Depth of Discharge (DoD):</span>
                       <strong>{simParams.depth} %</strong>
                     </div>
-                    <input 
-                      type="range" min="20" max="100" value={simParams.depth} 
+                    <input
+                      type="range" min="20" max="100" value={simParams.depth}
                       onChange={(e) => setSimParams({ ...simParams, depth: parseInt(e.target.value) })}
                     />
                     <small>Deep cycling below 10% accelerates cathode stress</small>
