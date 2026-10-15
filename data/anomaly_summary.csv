@@ -1,0 +1,9 @@
+anomaly_type,anomaly_severity,count
+combined_high_temp_overcurrent,critical,29
+deep_discharge,medium,54
+deep_discharge+high_temperature,critical,1
+high_temperature,high,81
+overcurrent,high,91
+sensor_spike,medium,59
+voltage_anomaly,medium,93
+voltage_anomaly+high_temperature,critical,2
