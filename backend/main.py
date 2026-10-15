@@ -13,6 +13,19 @@ SOH_PATH = Path(os.getenv("SOH_MODEL_PATH", str(HERE / "models" / "soh_model.job
 ANOMALY_PATH = Path(os.getenv("ANOMALY_MODEL_PATH", str(HERE / "models" / "anomaly_model.joblib")))
 
 app = FastAPI(title="EV Battery Monitoring API", version="1.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://anshikach2006.github.io",
+        "http://localhost:5173",
+        "http://localhost:3000",
+    ],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
                    allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
